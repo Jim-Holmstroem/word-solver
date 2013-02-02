@@ -44,13 +44,7 @@ class wordsolver(object):
         )
 
     def is_word(self, word):
-        #print("is_word", word)
-        #if(isinstance(word, str)):
         return word in self.words_set
-        #elif(isinstance(word, set)):
-        #    return True #assume a set already contains valid words
-        #else:
-        #    return False
 
     def is_partial_word(self, word):
         return word in self.partial_words_set
@@ -61,8 +55,6 @@ class wordsolver(object):
         def solve_from(pt, free_pts = set(matrix.keys()), init=""):
             word = init + matrix[pt]
             if(self.is_partial_word(word)):
-                #if(self.is_word(word)):
-                #    print(word)
                 distance = partial(Lmax, pt)
                 neighbor = ( lambda p: distance(p) == 1 )
                 solve_from_next = partial(

@@ -1,6 +1,7 @@
 import operator as op
 import itertools as it
-import copy as cp
+import random as rnd
+import os as os
 from functools import reduce
 from functools import partial
 import multiprocessing as mp
@@ -50,8 +51,6 @@ class wordsolver(object):
         return word in self.partial_words_set
 
     def solve(self, matrix):
-        matrix = convert_to_sparse_matrix(matrix)
-
         def solve_from(pt, free_pts = set(matrix.keys()), init=""):
             word = init + matrix[pt]
             if(self.is_partial_word(word)):
@@ -65,7 +64,7 @@ class wordsolver(object):
                 return reduce(
                     op.or_,
                     filter(
-                        bool,
+                        bool, #not Null
                         map(
                             solve_from_next,
                             filter(
@@ -85,11 +84,26 @@ class wordsolver(object):
             )
         )
 
+def random_matrix(N, M):
+    letters = "ABCDEFGHIJKLMNOPQRSTUVXYZ"
+    while True:
+        yield { p: rnd.choice(letters) for p in it.product(range(N), range(M)) }
+
+def filename(matrix):
+    return "".join(
+        map( #sorted dict
+            lambda p:matrix[p], 
+            sorted(matrix.keys())
+        )
+    )+".dat" 
 
 if __name__ == "__main__":
-    m=["ABCD","EFGH","IJKL","MNOP"];
-
+    N = 4
+    M = 4
+    folder = "${N}x${M}".format(N=N, M=M) 
     ws=wordsolver()
-    print(ws.solve(m))
 
+    for m in random_matrix(N, M):
+        print(m)
+        print(len(ws.solve(m)))
 

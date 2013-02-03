@@ -99,12 +99,25 @@ def name(matrix):
         )
     ) 
 
+
+def print_biggest_yet(data):
+    maximum = ('',(set(),0))
+    for k in data: #oops for loop
+        val = (k, data[k])
+        if(maximum[1][1] < val[1][1]):
+            maximum = val
+    print(maximum)
+
 if __name__ == "__main__":
     N = 4
     M = 4
     filename= "{N}x{M}.dat".format(N=N, M=M) 
     
     data = PersistentDict(filename=filename)
+
+
+    print_biggest_yet(data)
+
 
     ncpu = mp.cpu_count()
 

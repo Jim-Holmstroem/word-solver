@@ -1,2 +1,2 @@
 run:
-	python3 word-solver.py
+	python3 wordsolver.py

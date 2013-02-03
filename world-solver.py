@@ -6,6 +6,8 @@ from functools import reduce
 from functools import partial
 import multiprocessing as mp
 
+from persistentdict import PersistentDict
+
 def convert_to_sparse_matrix(matrix):
     N = len(matrix)
     M = len(matrix[0])
@@ -89,21 +91,30 @@ def random_matrix(N, M):
     while True:
         yield { p: rnd.choice(letters) for p in it.product(range(N), range(M)) }
 
-def filename(matrix):
+def name(matrix):
     return "".join(
         map( #sorted dict
             lambda p:matrix[p], 
             sorted(matrix.keys())
         )
-    )+".dat" 
+    ) 
 
 if __name__ == "__main__":
     N = 4
     M = 4
-    folder = "${N}x${M}".format(N=N, M=M) 
-    ws=wordsolver()
+    filename= "{N}x{M}.dat".format(N=N, M=M) 
+    
+    data = PersistentDict(filename=filename)
 
-    for m in random_matrix(N, M):
-        print(m)
-        print(len(ws.solve(m)))
+    ncpu = mp.cpu_count()
 
+    ws = wordsolver()
+
+
+    def worker(m):
+        ans = ws.solve(m)
+        return (name(m),(":".join(ans),len(ans)))
+    pool = mp.Pool(processes=ncpu)
+
+    for s in pool.imap_unordered(worker,random_matrix(N,M),chunksize=16*ncpu):
+        data[s[0]]=s[1]
